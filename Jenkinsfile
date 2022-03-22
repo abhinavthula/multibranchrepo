@@ -1,23 +1,23 @@
-node('master') 
-{
-    stage('Continuous Download') 
-	{
-    git 'https://github.com/sunildevops77/maven.git'
-	}
-    stage('Continuous Build') 
-	{
-    sh label: '', script: 'mvn package'
-	}
-    stage('Continuous Deployment') 
-	{
-sh label: '', script: 'scp /home/ubuntu/.jenkins/workspace/ScriptedPipeline/webapp/target/webapp.war   ubuntu@172.31.26.217:/var/lib/tomcat8/webapps/qaenv.war'
-	}
-    stage('Continuous Testing') 
-	{
+pipeline{
+agent any
+	stages{
+		stage('SCM Checkout_Master'){
+			steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/abhinavthula/sampleproject.git']]])
+            }
+		}
+		stage('Continuos Build_Master'){
+			steps{
+				 sh label: '', script: 'mvn package'
+			}
+		}
+		stage('Continuous Testing_Master') {
               sh label: '', script: 'echo "Testing Passed"'
-	}
-    stage('Continuous Delivery') 
-	{
-sh label: '', script: 'scp /home/ubuntu/.jenkins/workspace/ScriptedPipeline/webapp/target/webapp.war   ubuntu@172.31.22.88:/var/lib/tomcat8/webapps/prodenv.war'
+		}
+		stage('Continuous Delivery_Master'){
+		    steps {
+		        sh label: '', script: 'scp /home/ubuntu/.jenkins/workspace/ScriptedPipeline/webapp/target/webapp.war   ubuntu@172.31.44.115:/var/lib/tomcat8/webapps/qaenv.war'
+		    }
+		}
 	}
 }
